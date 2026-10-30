@@ -74,8 +74,9 @@ A toast says where the copy went: `plan-names: plan saved as plans/2026-10-29-ad
 
 ## The `folder` option
 
-Where the copies go, relative to your project's folder (the folder Claude
-Code was started in; a `cd` inside a command does not move it). The default is `plans`.
+Where the copies go, relative to your project's folder (where Claude Code
+started, or where `/cd` or a worktree move took it; a shell `cd` does not
+move it). The default is `plans`.
 An absolute path works too. Plugin options are listed in `/config`.
 
 ## What it writes

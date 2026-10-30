@@ -18,7 +18,7 @@
     "folder": {
       "type": "string",
       "title": "Folder",
-      "description": "Where the named copies go, relative to your project's folder (the folder Claude Code was started in). Default: plans",
+      "description": "Where the named copies go, relative to your project's folder (where Claude Code started, or where /cd or a worktree move took it). Default: plans",
       "default": "plans"
     }
   }
