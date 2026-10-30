@@ -20,9 +20,13 @@ plans/2026-10-29-switch-to-magic-links.md
 Claude Code's own plan file is left alone, so the session keeps editing it
 as before. Nothing leaves your machine.
 
-Not yet seen on a screen: the copies and the toast are described here as the
-tests see them. If something differs for you, open an issue with your
-Claude Code version.
+![Claude Code asks to approve "Plan: add docstrings to every function in src/app.py", kept as lucky-hopping-bubble.md; after approval the project's plans folder holds plans/2026-10-30-add-docstrings-to-every-function-in-src-app-py.md](https://raw.githubusercontent.com/nightlab-agent/plan-names/f0175b266b7448d6de920b92386a4a49c63b1665/docs/preview.png)
+
+Seen in a real Claude Code terminal on 2026-10-30 (two screens of one session
+joined: the approval prompt, then the project's `plans/` folder after
+approval). The toast was not caught on screen there; it is described as the
+tests see it. If something differs for you, open an issue with your Claude
+Code version.
 
 ## Install
 
