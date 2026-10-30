@@ -19,13 +19,13 @@ plans/2026-10-29-switch-to-magic-links.md
 Claude Code's own plan file is left alone, so the session keeps editing it
 as before. Nothing leaves your machine.
 
-![Claude Code asks to approve "Plan: add docstrings to every function in src/app.py", kept as lucky-hopping-bubble.md; after approval the project's plans folder holds plans/2026-10-30-add-docstrings-to-every-function-in-src-app-py.md](https://raw.githubusercontent.com/nightlab-agent/plan-names/f0175b266b7448d6de920b92386a4a49c63b1665/docs/preview.png)
+![Claude Code shows "Plan: Add docstrings to every function in src/app.py", kept as polymorphic-bouncing-nygaard.md; after approval the project's plans folder holds plans/2026-10-30-add-docstrings-to-every-function-in-src-app-py.md](https://raw.githubusercontent.com/nightlab-agent/plan-names/ac5531bdf9ed8f06a779a67bc15e68df17834963/docs/preview.png)
 
-Seen in a real Claude Code terminal on 2026-10-30 (two screens of one session
-joined: the approval prompt, then the project's `plans/` folder after
-approval). The toast was not caught on screen there; it is described as the
-tests see it. If something differs for you, open an issue with your Claude
-Code version.
+Seen in a real Claude Code terminal (v2.1.312) on 2026-10-30, with this
+version: three parts of one session joined (the plan, the approval prompt,
+then the project's `plans/` folder after approval). The toast was not caught
+on screen there; it is described as the tests see it. If something differs
+for you, open an issue with your Claude Code version.
 
 ## Install
 
@@ -68,14 +68,14 @@ A toast says where the copy went: `plan-names: plan saved as plans/2026-10-29-ad
 | You approve a plan | Writes `<date>-<title>.md` |
 | You approve the same plan again after Claude revised it (same title, same day) | Overwrites that one copy |
 | Claude replaces the plan with a new one (a new title) | Writes a second copy; the first is kept |
-| A file with that name is already there that plan-names did not write for this plan | Adds `-2`, `-3`, ... and never overwrites it |
+| A file with that name (in any letter case) is already there that plan-names did not write for this plan, or its copy was edited or replaced since | Adds `-2`, `-3`, ... and never overwrites it |
 | You reject the plan, or the call fails | Nothing |
-| A teammate's plan is still waiting on the team lead | Nothing until it is approved |
+| Claude Code answers that the plan is waiting on a team lead's approval | Nothing for that answer |
 
 ## The `folder` option
 
-Where the copies go, relative to your project's folder (where the session
-started; a `cd` inside a command does not move it). The default is `plans`.
+Where the copies go, relative to your project's folder (the folder Claude
+Code was started in; a `cd` inside a command does not move it). The default is `plans`.
 An absolute path works too. Plugin options are listed in `/config`.
 
 ## What it writes
@@ -84,7 +84,7 @@ An absolute path works too. Plugin options are listed in `/config`.
   folder), the plan's text unchanged, with a final newline added if it has
   none.
 - In Claude Code's plugin store, one entry per plan file it has copied (the
-  title slug, the date and the copy's path), so a revised plan updates its
+  title slug, the date, the copy's path and a checksum of its text), so a revised plan updates its
   copy instead of making a new one.
 
 ## What each hook does
@@ -129,7 +129,7 @@ Quit that session, then:
 sh tests/release.sh
 ```
 
-That runs `claude plugin validate .`, `claude plugin test .` (23 tests with a
+That runs `claude plugin validate .`, `claude plugin test .` (29 tests with a
 mocked disk and a mocked ExitPlanMode answer), a type check with
 `tsc --noEmit` against Claude Code's declarations, the plugin directory
 checklist (`tests/checklist.py`), and a check that the version string agrees

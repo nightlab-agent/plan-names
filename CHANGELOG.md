@@ -5,4 +5,5 @@
 - First version: every approved plan is saved as `<folder>/<date>-<title>.md`
   (`folder` defaults to `plans`, in the project's folder). The same plan approved
   again updates its one copy; a new plan gets a new copy; a file plan-names did
-  not write for that plan is never overwritten.
+  not write for that plan (or a name differing only in letter case) is never
+  overwritten.
