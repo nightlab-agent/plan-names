@@ -42,7 +42,8 @@ export const dayOf = (at: Date): string =>
  * so an earlier plan is never overwritten.
  */
 export const nameFor = (folder: string, date: string, slug: string, taken: ReadonlySet<string>, prev?: Filed): string => {
-  if (prev && prev.slug === slug && prev.date === date && prev.file.startsWith(`${folder}/`)) {
+  if (prev && prev.slug === slug && prev.date === date && prev.file.startsWith(`${folder}/`) &&
+    !prev.file.slice(folder.length + 1).includes('/')) {
     return prev.file.slice(folder.length + 1)
   }
   for (let n = 1; ; n++) {
@@ -73,11 +74,12 @@ export const register: Register = (on, options) => {
 
       const named = folderOf((options as { folder?: unknown } | undefined)?.folder)
       const isAbsolute = named.startsWith('/') || /^[A-Za-z]:[\\/]/.test(named)
-      const folder = isAbsolute ? named : `${(await $.session.cwd()).replace(/[\\/]+$/, '')}/${named}`
+      const folder = isAbsolute ? named : `${(await $.session.root()).replace(/[\\/]+$/, '')}/${named}`
       const slug = slugOf(titleOf(plan))
       const date = dayOf(new Date())
-      const key = `filed:${out.filePath ?? slug}`
-      const prev = (await $.store.get(key)) as Filed | undefined
+      // Only a plan file says two approvals are the same plan; without one, a title is not enough.
+      const key = out.filePath ? `filed:${out.filePath}` : undefined
+      const prev = key ? ((await $.store.get(key)) as Filed | undefined) : undefined
       const listed = (await $.fs.exists(folder)) ? await $.fs.list(folder) : []
       const taken = new Set([...listed.map(x => x.name), ...[...pending].map(p => p.slice(folder.length + 1))])
       const name = nameFor(folder, date, slug, taken, prev)
@@ -89,7 +91,7 @@ export const register: Register = (on, options) => {
       } finally {
         pending.delete(file)
       }
-      await $.store.set(key, { slug, date, file } satisfies Filed)
+      if (key) await $.store.set(key, { slug, date, file } satisfies Filed)
       $.ui.toast(`plan-names: plan saved as ${isAbsolute ? file : `${named}/${name}`}`)
     } catch {
       // A failure of this mod never changes the plan or the call.

@@ -14,6 +14,7 @@ const world = (on: On, opts: { files?: Record<string, string>; writeFails?: bool
   let answer: Answer = { result: {} }
   const rel = (p: string) => (p.startsWith(`${CWD}/`) ? p.slice(CWD.length + 1) : p)
   on('session.cwd', () => ({ value: CWD }))
+  on('session.root', () => ({ value: CWD }))
   on('fs.exists', (_, e) => ({ value: [...files.keys()].some(f => f === rel(e.path) || f.startsWith(`${rel(e.path)}/`)) }))
   on('fs.list', (_, e) => ({
     value: [...files.keys()]
