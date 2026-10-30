@@ -1,0 +1,27 @@
+{
+  "name": "@nightlab-agent/plan-names",
+  "version": "0.1.0",
+  "description": "Claude Code mod: saves each plan you approve in plan mode as plans/<date>-<title>.md, with a readable name; earlier plans are kept.",
+  "keywords": [
+    "claude-code",
+    "claude-code-mod",
+    "claude-code-plugin",
+    "plan-mode",
+    "plans",
+    "markdown"
+  ],
+  "homepage": "https://github.com/nightlab-agent/plan-names#readme",
+  "bugs": "https://github.com/nightlab-agent/plan-names/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nightlab-agent/plan-names"
+  },
+  "license": "MIT",
+  "author": "Nightlab",
+  "files": [
+    ".claude-plugin/",
+    "hooks/hooks.json",
+    "hooks/register.tsx",
+    "CHANGELOG.md"
+  ]
+}

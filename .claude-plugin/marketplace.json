@@ -1,0 +1,16 @@
+{
+  "name": "nightlab-plan-names",
+  "owner": {
+    "name": "Nightlab"
+  },
+  "plugins": [
+    {
+      "name": "plan-names",
+      "source": "./",
+      "description": "Saves each approved plan under a readable, dated name in your project.",
+      "version": "0.1.0",
+      "category": "productivity"
+    }
+  ],
+  "description": "One mod: readable, dated names for Claude Code's plans, by Nightlab."
+}
