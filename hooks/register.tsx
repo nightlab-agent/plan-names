@@ -2,7 +2,7 @@ import type { Register } from 'claude-code'
 
 // One plan, filed once per name: the source file Claude Code wrote, the slug and the
 // day of the copy, and the copy's path.
-type Filed = { slug: string; date: string; file: string }
+type Filed = { slug: string; date: string; file: string; sum?: string }
 
 const MAX_SLUG = 60
 
@@ -32,6 +32,13 @@ export const slugOf = (title: string): string => {
   return slug || 'plan'
 }
 
+/** A short checksum of a copy's text (FNV-1a), to tell our copy from a file someone else wrote there. */
+export const sumOf = (text: string): string => {
+  let h = 0x811c9dc5
+  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 0x01000193) >>> 0
+  return h.toString(16)
+}
+
 /** The local date as YYYY-MM-DD. */
 export const dayOf = (at: Date): string =>
   `${at.getFullYear()}-${String(at.getMonth() + 1).padStart(2, '0')}-${String(at.getDate()).padStart(2, '0')}`
@@ -39,16 +46,18 @@ export const dayOf = (at: Date): string =>
 /**
  * The copy's file name in `folder`: the earlier copy's of this source when its slug and day
  * are unchanged (the same plan approved again), else the first free `<date>-<slug>[-n].md`,
- * so an earlier plan is never overwritten.
+ * so an earlier plan is never overwritten. Names are compared without case: on macOS and
+ * Windows disks, two names differing only in case are one file.
  */
 export const nameFor = (folder: string, date: string, slug: string, taken: ReadonlySet<string>, prev?: Filed): string => {
   if (prev && prev.slug === slug && prev.date === date && prev.file.startsWith(`${folder}/`) &&
     !prev.file.slice(folder.length + 1).includes('/')) {
     return prev.file.slice(folder.length + 1)
   }
+  const folded = new Set([...taken].map(t => t.toLowerCase()))
   for (let n = 1; ; n++) {
     const name = `${date}-${slug}${n > 1 ? `-${n}` : ''}.md`
-    if (!taken.has(name)) return name
+    if (!folded.has(name.toLowerCase())) return name
   }
 }
 
@@ -59,9 +68,12 @@ const folderOf = (value: unknown): string => {
 }
 
 export const register: Register = (on, options) => {
-  // Paths chosen in this process and not yet written: two plans approved at once never
-  // pick the same free name.
-  const pending = new Set<string>()
+  // Paths chosen in this process, each with the step its write finished (Infinity while
+  // pending). A listing begun before that step may not show the file yet, so the path counts
+  // as taken: two plans approved at once never pick the same free name, however late a
+  // listing arrives, and a copy the user deleted earlier frees its name again.
+  const chosen = new Map<string, number>()
+  let step = 0
 
   on('tool.call', { tool: 'ExitPlanMode' }, async ($, e, next) => {
     const done = await next(e)
@@ -79,19 +91,24 @@ export const register: Register = (on, options) => {
       const date = dayOf(new Date())
       // Only a plan file says two approvals are the same plan; without one, a title is not enough.
       const key = out.filePath ? `filed:${out.filePath}` : undefined
-      const prev = key ? ((await $.store.get(key)) as Filed | undefined) : undefined
+      let prev = key ? ((await $.store.get(key)) as Filed | undefined) : undefined
+      // Reuse the stored name only while the file there is still the copy this mod wrote.
+      if (prev && !(prev.sum !== undefined && (await $.fs.exists(prev.file)) &&
+        sumOf(await $.fs.read(prev.file)) === prev.sum)) prev = undefined
+      const listedAt = step
       const listed = (await $.fs.exists(folder)) ? await $.fs.list(folder) : []
-      const taken = new Set([...listed.map(x => x.name), ...[...pending].map(p => p.slice(folder.length + 1))])
+      const taken = new Set([...listed.map(x => x.name), ...[...chosen].filter(([p, at]) => at > listedAt && p.startsWith(`${folder}/`)).map(([p]) => p.slice(folder.length + 1))])
       const name = nameFor(folder, date, slug, taken, prev)
       const file = `${folder}/${name}`
+      const text = plan.endsWith('\n') ? plan : `${plan}\n`
 
-      pending.add(file)
+      chosen.set(file, Infinity)
       try {
-        await $.fs.write(`${folder}/${name}`, plan.endsWith('\n') ? plan : `${plan}\n`)
+        await $.fs.write(`${folder}/${name}`, text)
       } finally {
-        pending.delete(file)
+        chosen.set(file, ++step)
       }
-      if (key) await $.store.set(key, { slug, date, file } satisfies Filed)
+      if (key) await $.store.set(key, { slug, date, file, sum: sumOf(text) } satisfies Filed)
       $.ui.toast(`plan-names: plan saved as ${isAbsolute ? file : `${named}/${name}`}`)
     } catch {
       // A failure of this mod never changes the plan or the call.
