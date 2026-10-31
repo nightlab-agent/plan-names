@@ -6,3 +6,4 @@
 - Seen in a real Claude Code terminal (v2.1.312) on 2026-10-30, after the fix (preview 20261030-114933): after approval, `plans/2026-10-30-add-docstrings-to-every-function-in-src-app-py.md`
   (picture: docs/preview.png). The toast was not caught on screen.
 - Released 0.1.0 on GitHub and npm (@nightlab-agent/plan-names) on 2026-10-30.
+- 0.1.1 (2026-10-31): toast text no longer starts with the mod's name (the engine adds it); a test asserts it.

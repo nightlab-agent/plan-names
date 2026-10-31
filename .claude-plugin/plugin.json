@@ -1,6 +1,6 @@
 {
   "name": "plan-names",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Saves each plan you approve in Claude Code's plan mode as plans/<date>-<title>.md in your project, so plans get readable names and earlier ones are kept.",
   "homepage": "https://github.com/nightlab-agent/plan-names#readme",
   "repository": "https://github.com/nightlab-agent/plan-names",
