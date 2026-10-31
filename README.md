@@ -21,11 +21,13 @@ as before. Nothing leaves your machine.
 
 ![Claude Code shows "Plan: Add docstrings to every function in src/app.py", kept as polymorphic-bouncing-nygaard.md; after approval the project's plans folder holds plans/2026-10-30-add-docstrings-to-every-function-in-src-app-py.md](https://raw.githubusercontent.com/nightlab-agent/plan-names/ac5531bdf9ed8f06a779a67bc15e68df17834963/docs/preview.png)
 
-Seen in a real Claude Code terminal (v2.1.312) on 2026-10-30, with this
-version: three parts of one session joined (the plan, the approval prompt,
+Seen in a real Claude Code terminal (v2.1.312) on 2026-10-30, with version
+0.1.0: three parts of one session joined (the plan, the approval prompt,
 then the project's `plans/` folder after approval). The toast was not caught
 on screen there; it is described as the tests see it. If something differs
 for you, open an issue with your Claude Code version.
+Keeping earlier versions under `.revisions/` (0.2.0) has not yet been seen on
+screen; it is described as the tests see it.
 
 ## Install
 
@@ -84,6 +86,8 @@ An absolute path works too. Plugin options are listed in `/config`.
 - The copies, in the `folder` (default `plans/` in your project's
   folder), the plan's text unchanged, with a final newline added if it has
   none.
+- When you approve a revised plan, the version it replaces, as
+  `<folder>/.revisions/<date>-<title>-r1.md` (then `-r2`, ...).
 - In Claude Code's plugin store, one entry per plan file it has copied (the
   title slug, the date, the copy's path and a checksum of its text), so a revised plan updates its
   copy instead of making a new one.
@@ -130,7 +134,7 @@ Quit that session, then:
 sh tests/release.sh
 ```
 
-That runs `claude plugin validate .`, `claude plugin test .` (29 tests with a
+That runs `claude plugin validate .`, `claude plugin test .` (32 tests with a
 mocked disk and a mocked ExitPlanMode answer), a type check with
 `tsc --noEmit` against Claude Code's declarations, the plugin directory
 checklist (`tests/checklist.py`), and a check that the version string agrees
