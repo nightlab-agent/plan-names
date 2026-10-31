@@ -101,6 +101,16 @@ export const register: Register = (on, options) => {
       const name = nameFor(folder, date, slug, taken, prev)
       const file = `${folder}/${name}`
       const text = plan.endsWith('\n') ? plan : `${plan}\n`
+      // A revised plan updates its one copy; the version it replaces is kept first, under
+      // `.revisions/`, so no approved plan is ever lost (anthropics/claude-code#14259).
+      if (prev && prev.file === file && prev.sum !== sumOf(text)) {
+        const kept = `${folder}/.revisions`
+        const had = (await $.fs.exists(kept)) ? (await $.fs.list(kept)).map(x => x.name.toLowerCase()) : []
+        const stem = name.replace(/\.md$/, '')
+        let n = 1
+        while (had.includes(`${stem}-r${n}.md`.toLowerCase())) n++
+        await $.fs.write(`${kept}/${stem}-r${n}.md`, await $.fs.read(prev.file))
+      }
 
       chosen.set(file, Infinity)
       try {

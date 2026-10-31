@@ -78,9 +78,44 @@ test('the same plan approved again (same source, same title) updates its one cop
   await $.tool.call({ tool: 'ExitPlanMode' })
   w.approve(`${PLAN}2. Add tests\n`, SRC)
   await $.tool.call({ tool: 'ExitPlanMode' })
-  const copies = [...w.files.keys()].filter(f => f.startsWith('plans/'))
+  const copies = [...w.files.keys()].filter(f => f.startsWith('plans/') && !f.startsWith('plans/.revisions/'))
   expect(copies).toEqual([`plans/${today()}-add-oauth-login.md`])
   expect(w.files.get(copies[0])).toContain('2. Add tests')
+})
+
+test('a revised plan keeps the version it replaces under .revisions/, numbered', async ($, on) => {
+  const w = world(on)
+  w.approve(PLAN, SRC)
+  await $.tool.call({ tool: 'ExitPlanMode' })
+  w.approve(`${PLAN}2. Add tests\n`, SRC)
+  await $.tool.call({ tool: 'ExitPlanMode' })
+  w.approve(`${PLAN}2. Add tests\n3. Add docs\n`, SRC)
+  await $.tool.call({ tool: 'ExitPlanMode' })
+  const stem = `${today()}-add-oauth-login`
+  expect(w.files.get(`plans/.revisions/${stem}-r1.md`)).toBe(PLAN)
+  expect(w.files.get(`plans/.revisions/${stem}-r2.md`)).toBe(`${PLAN}2. Add tests\n`)
+  expect(w.files.get(`plans/${stem}.md`)).toContain('3. Add docs')
+})
+
+test('revision control: the same text approved again keeps no revision', async ($, on) => {
+  const w = world(on)
+  w.approve(PLAN, SRC)
+  await $.tool.call({ tool: 'ExitPlanMode' })
+  w.approve(PLAN, SRC)
+  await $.tool.call({ tool: 'ExitPlanMode' })
+  expect([...w.files.keys()].filter(f => f.includes('.revisions'))).toEqual([])
+})
+
+test('a copy the user edited is not taken as a revision: it stays, the plan gets -2', async ($, on) => {
+  const w = world(on)
+  w.approve(PLAN, SRC)
+  await $.tool.call({ tool: 'ExitPlanMode' })
+  w.files.set(`plans/${today()}-add-oauth-login.md`, 'my notes\n')
+  w.approve(`${PLAN}2. Add tests\n`, SRC)
+  await $.tool.call({ tool: 'ExitPlanMode' })
+  expect(w.files.get(`plans/${today()}-add-oauth-login.md`)).toBe('my notes\n')
+  expect(w.files.get(`plans/${today()}-add-oauth-login-2.md`)).toContain('2. Add tests')
+  expect([...w.files.keys()].filter(f => f.includes('.revisions'))).toEqual([])
 })
 
 test('a new plan in the same file (a pivot) gets its own copy; the earlier one is kept', async ($, on) => {

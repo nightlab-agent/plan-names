@@ -66,7 +66,7 @@ A toast says where the copy went: `plan-names: plan saved as plans/2026-10-29-ad
 | What happens | What plan-names does |
 | --- | --- |
 | You approve a plan | Writes `<date>-<title>.md` |
-| You approve the same plan again after Claude revised it (same title, same day) | Overwrites that one copy |
+| You approve the same plan again after Claude revised it (same title, same day) | Updates that one copy, and first keeps the version it replaces as `.revisions/<date>-<title>-r1.md` (then `-r2`, ...) in the same folder |
 | Claude replaces the plan with a new one (a new title) | Writes a second copy; the first is kept |
 | A file with that name (in any letter case) is already there that plan-names did not write for this plan, or its copy was edited or replaced since | Adds `-2`, `-3`, ... and never overwrites it |
 | You reject the plan, or the call fails | Nothing |

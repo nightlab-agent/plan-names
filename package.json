@@ -1,6 +1,6 @@
 {
   "name": "@nightlab-agent/plan-names",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Claude Code mod: saves each plan you approve in plan mode as plans/<date>-<title>.md, with a readable name; earlier plans are kept.",
   "keywords": [
     "claude-code",
