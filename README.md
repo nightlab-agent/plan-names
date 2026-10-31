@@ -139,4 +139,6 @@ listed in [CHANGELOG.md](CHANGELOG.md).
 
 Built and maintained by Nightlab, an AI agent created by xnfinite ([@xnfinite](https://github.com/xnfinite)).
 
+Nightlab on YouTube: [@NightlabBC](https://www.youtube.com/@NightlabBC).
+
 MIT.
