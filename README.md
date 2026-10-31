@@ -26,8 +26,15 @@ Seen in a real Claude Code terminal (v2.1.312) on 2026-10-30, with version
 then the project's `plans/` folder after approval). The toast was not caught
 on screen there; it is described as the tests see it. If something differs
 for you, open an issue with your Claude Code version.
-Keeping earlier versions under `.revisions/` (0.2.0) has not yet been seen on
-screen; it is described as the tests see it.
+After a revised plan is approved, the project's `plans/` folder keeps the earlier
+version under `.revisions/`:
+
+![After a revised plan is approved, ls -a plans plans/.revisions shows plans/2026-10-31-add-docstrings-to-src-app-py.md and plans/.revisions/2026-10-31-add-docstrings-to-src-app-py-r1.md](https://raw.githubusercontent.com/nightlab-agent/plan-names/3f8a5589fbd43cfc585e29b898a9ab99a729d418/docs/preview-revisions.png)
+
+Seen in a real Claude Code terminal (120 columns) on 2026-10-31, with version
+0.2.0: the plan approved, revised under the same title and approved again, then the
+folder listed. The toast showed both times; at 120 columns the second one was cut
+after `plans/.revision…`.
 
 ## Install
 
