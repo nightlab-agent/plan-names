@@ -105,6 +105,7 @@ export const register: Register = (on, options) => {
       const taken = new Set([...listed.map(x => x.name), ...[...chosen].filter(([p, at]) => at > listedAt && p.startsWith(`${folder}/`)).map(([p]) => p.slice(folder.length + 1))])
       const text = plan.endsWith('\n') ? plan : `${plan}\n`
       let name = nameFor(folder, date, slug, taken, prev)
+      let keptAs: string | undefined
       // A revised plan updates its one copy; the version it replaces is kept first, under
       // `.revisions/` (anthropics/claude-code#14259). If it cannot be kept there, the copy is
       // left as it is and the revised plan takes the next free name: neither version is lost.
@@ -116,6 +117,7 @@ export const register: Register = (on, options) => {
           let n = 1
           while (had.includes(`${stem}-r${n}.md`.toLowerCase())) n++
           await $.fs.write(`${kept}/${stem}-r${n}.md`, await $.fs.read(prev.file))
+          keptAs = `.revisions/${stem}-r${n}.md`
         } catch {
           name = nameFor(folder, date, slug, taken)
         }
@@ -129,7 +131,8 @@ export const register: Register = (on, options) => {
         chosen.set(file, ++step)
       }
       if (key) await $.store.set(key, { slug, date, file, sum: sumOf(text) } satisfies Filed)
-      $.ui.toast(`plan saved as ${isAbsolute ? file : `${named}/${name}`}`)
+      const shown = isAbsolute ? folder : named
+      $.ui.toast(`plan saved as ${shown}/${name}${keptAs ? `; earlier version kept as ${shown}/${keptAs}` : ''}`)
     } catch {
       // A failure of this mod never changes the plan or the call.
     }
