@@ -134,7 +134,7 @@ Quit that session, then:
 sh tests/release.sh
 ```
 
-That runs `claude plugin validate .`, `claude plugin test .` (32 tests with a
+That runs `claude plugin validate .`, `claude plugin test .` (39 tests with a
 mocked disk and a mocked ExitPlanMode answer), a type check with
 `tsc --noEmit` against Claude Code's declarations, the plugin directory
 checklist (`tests/checklist.py`), and a check that the version string agrees

@@ -75,14 +75,19 @@ export const register: Register = (on, options) => {
   const chosen = new Map<string, number>()
   let step = 0
 
+  // Approvals are copied one at a time: two revisions of one plan at once must not both read
+  // the same copy and keep the same revision.
+  let queue: Promise<unknown> = Promise.resolve()
+
   on('tool.call', { tool: 'ExitPlanMode' }, async ($, e, next) => {
     const done = await next(e)
+    const turn = queue.then(async () => {
     try {
-      if (done.deny !== undefined || done.isError) return done
+      if (done.deny !== undefined || done.isError) return
       const out = done.result
-      if (!out || out.awaitingLeaderApproval) return done
+      if (!out || out.awaitingLeaderApproval) return
       const plan = out.plan ?? (out.filePath ? await $.fs.read(out.filePath) : null)
-      if (typeof plan !== 'string' || plan.trim() === '') return done
+      if (typeof plan !== 'string' || plan.trim() === '') return
 
       const named = folderOf((options as { folder?: unknown } | undefined)?.folder)
       const isAbsolute = named.startsWith('/') || /^[A-Za-z]:[\\/]/.test(named)
@@ -98,19 +103,24 @@ export const register: Register = (on, options) => {
       const listedAt = step
       const listed = (await $.fs.exists(folder)) ? await $.fs.list(folder) : []
       const taken = new Set([...listed.map(x => x.name), ...[...chosen].filter(([p, at]) => at > listedAt && p.startsWith(`${folder}/`)).map(([p]) => p.slice(folder.length + 1))])
-      const name = nameFor(folder, date, slug, taken, prev)
-      const file = `${folder}/${name}`
       const text = plan.endsWith('\n') ? plan : `${plan}\n`
+      let name = nameFor(folder, date, slug, taken, prev)
       // A revised plan updates its one copy; the version it replaces is kept first, under
-      // `.revisions/`, so no approved plan is ever lost (anthropics/claude-code#14259).
-      if (prev && prev.file === file && prev.sum !== sumOf(text)) {
-        const kept = `${folder}/.revisions`
-        const had = (await $.fs.exists(kept)) ? (await $.fs.list(kept)).map(x => x.name.toLowerCase()) : []
-        const stem = name.replace(/\.md$/, '')
-        let n = 1
-        while (had.includes(`${stem}-r${n}.md`.toLowerCase())) n++
-        await $.fs.write(`${kept}/${stem}-r${n}.md`, await $.fs.read(prev.file))
+      // `.revisions/` (anthropics/claude-code#14259). If it cannot be kept there, the copy is
+      // left as it is and the revised plan takes the next free name: neither version is lost.
+      if (prev && `${folder}/${name}` === prev.file && prev.sum !== sumOf(text)) {
+        try {
+          const kept = `${folder}/.revisions`
+          const had = (await $.fs.exists(kept)) ? (await $.fs.list(kept)).map(x => x.name.toLowerCase()) : []
+          const stem = name.replace(/\.md$/, '')
+          let n = 1
+          while (had.includes(`${stem}-r${n}.md`.toLowerCase())) n++
+          await $.fs.write(`${kept}/${stem}-r${n}.md`, await $.fs.read(prev.file))
+        } catch {
+          name = nameFor(folder, date, slug, taken)
+        }
       }
+      const file = `${folder}/${name}`
 
       chosen.set(file, Infinity)
       try {
@@ -123,6 +133,9 @@ export const register: Register = (on, options) => {
     } catch {
       // A failure of this mod never changes the plan or the call.
     }
+    })
+    queue = turn.catch(() => undefined)
+    await turn
     return done
   })
 }
