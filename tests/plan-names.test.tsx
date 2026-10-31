@@ -59,7 +59,9 @@ test('an approved plan is saved under plans/<date>-<title>.md, word for word', a
   await $.tool.call({ tool: 'ExitPlanMode' })
   const name = `plans/${today()}-add-oauth-login.md`
   expect(w.files.get(name)).toBe(PLAN)
-  expect(w.toasts).toEqual([`plan-names: plan saved as ${name}`])
+  expect(w.toasts).toEqual([`plan saved as ${name}`])
+  // The engine puts the mod's name before every toast; the text must not carry it again.
+  expect(w.toasts.some(t => t.startsWith('plan-names:'))).toBe(false)
 })
 
 test('the call itself is passed on unchanged', async ($, on) => {
