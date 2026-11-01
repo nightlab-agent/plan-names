@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.1 (2026-11-01)
 
 - Tests: a plan approved first whose approval arrives after a later one's: neither version is lost;
   the copy holds the approval that arrived last, and the other is kept under `.revisions/`.
