@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Tests: a plan approved first whose approval arrives after a later one's: neither version is lost;
+  the copy holds the approval that arrived last, and the other is kept under `.revisions/`.
 - The toast after a revised plan fits a 120-column terminal, even with a long plan name.
   It read `...; earlier version kept as plans/.revisions/<name>-r1.md`, which was cut off;
   it now reads `... (earlier kept as -r1 in .revisions)`, or `(earlier: -r1)` when the

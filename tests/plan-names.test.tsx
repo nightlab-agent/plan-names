@@ -6,12 +6,15 @@ type On = Parameters<TestBody>[1]
 type Answer = { deny: string } | { result: unknown; isError?: boolean }
 
 // The engine beneath: an in-memory disk and store, a toast log, and an ExitPlanMode tool whose
-// answer each test sets. `slowWrite` makes every write wait a tick, so two calls interleave.
-const world = (on: On, opts: { files?: Record<string, string>; writeFails?: boolean; slowWrite?: boolean } = {}) => {
+// answer each test sets. `slowWrite` makes every write wait a tick, so two calls interleave;
+// `lag` holds each call's delay, in order, so an earlier call's answer can arrive later.
+const world = (on: On, opts: { files?: Record<string, string>; writeFails?: boolean; slowWrite?: boolean; lag?: number[] } = {}) => {
   const files = new Map(Object.entries(opts.files ?? {}))
   const store = new Map<string, unknown>()
   const toasts: string[] = []
   let answer: Answer = { result: {} }
+  // with `lag`, each approve() is one call's answer, taken in the order the calls reach the engine
+  const answers: Answer[] = []
   const rel = (p: string) => (p.startsWith(`${CWD}/`) ? p.slice(CWD.length + 1) : p)
   on('session.cwd', () => ({ value: CWD }))
   on('session.root', () => ({ value: CWD }))
@@ -41,9 +44,15 @@ const world = (on: On, opts: { files?: Record<string, string>; writeFails?: bool
     toasts.push(e.text)
     return { value: undefined }
   })
-  on('tool.call', () => answer as never)
+  on('tool.call', async () => {
+    const a = opts.lag ? (answers.shift() ?? answer) : answer
+    const wait = opts.lag?.shift()
+    if (wait) await new Promise(r => setTimeout(r, wait))
+    return a as never
+  })
   const approve = (plan: string | null, filePath?: string, extra: Record<string, unknown> = {}) => {
     answer = { result: { plan, isAgent: false, filePath, ...extra } }
+    if (opts.lag) answers.push(answer)
   }
   return { files, toasts, approve, set: (a: Answer) => { answer = a } }
 }
@@ -244,3 +253,31 @@ test('slug control: a title that merely contains "plan" keeps it', () => {
   expect(slugOf('Planner page redesign')).toBe('planner-page-redesign')
 })
 
+
+// Out of order: plan v1 is sent first but its approval arrives after v2's. Neither version is
+// lost, and the copy holds the approval that arrived last, as the toasts say.
+test('out of order: an approval that arrives late keeps the earlier one under .revisions/', async ($, on) => {
+  const w = world(on, { lag: [20, 0] })
+  const V2 = `${PLAN}2. Add tests\n`
+  w.approve(PLAN, SRC)
+  const one = $.tool.call({ tool: 'ExitPlanMode' })
+  w.approve(V2, SRC)
+  const two = $.tool.call({ tool: 'ExitPlanMode' })
+  await Promise.all([one, two])
+  const stem = `${today()}-add-oauth-login`
+  expect(w.files.get(`plans/.revisions/${stem}-r1.md`)).toBe(V2)
+  expect(w.files.get(`plans/${stem}.md`)).toBe(PLAN)
+  expect([...w.files.keys()].filter(f => f.startsWith('plans/')).length).toBe(2)
+})
+
+test('out of order comparison: approvals arriving in order keep v1 under .revisions/', async ($, on) => {
+  const w = world(on, { lag: [0, 0] })
+  const V2 = `${PLAN}2. Add tests\n`
+  w.approve(PLAN, SRC)
+  await $.tool.call({ tool: 'ExitPlanMode' })
+  w.approve(V2, SRC)
+  await $.tool.call({ tool: 'ExitPlanMode' })
+  const stem = `${today()}-add-oauth-login`
+  expect(w.files.get(`plans/.revisions/${stem}-r1.md`)).toBe(PLAN)
+  expect(w.files.get(`plans/${stem}.md`)).toBe(V2)
+})
