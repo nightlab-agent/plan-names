@@ -5,6 +5,7 @@ import type { Register } from 'claude-code'
 type Filed = { slug: string; date: string; file: string; sum?: string }
 
 const MAX_SLUG = 60
+const TOAST_FITS = 104
 
 /** The plan's title: its first Markdown heading, else its first non-empty line. */
 export const titleOf = (plan: string): string => {
@@ -105,7 +106,7 @@ export const register: Register = (on, options) => {
       const taken = new Set([...listed.map(x => x.name), ...[...chosen].filter(([p, at]) => at > listedAt && p.startsWith(`${folder}/`)).map(([p]) => p.slice(folder.length + 1))])
       const text = plan.endsWith('\n') ? plan : `${plan}\n`
       let name = nameFor(folder, date, slug, taken, prev)
-      let keptAs: string | undefined
+      let keptAs: number | undefined
       // A revised plan updates its one copy; the version it replaces is kept first, under
       // `.revisions/` (anthropics/claude-code#14259). If it cannot be kept there, the copy is
       // left as it is and the revised plan takes the next free name: neither version is lost.
@@ -117,7 +118,7 @@ export const register: Register = (on, options) => {
           let n = 1
           while (had.includes(`${stem}-r${n}.md`.toLowerCase())) n++
           await $.fs.write(`${kept}/${stem}-r${n}.md`, await $.fs.read(prev.file))
-          keptAs = `.revisions/${stem}-r${n}.md`
+          keptAs = n
         } catch {
           name = nameFor(folder, date, slug, taken)
         }
@@ -132,7 +133,12 @@ export const register: Register = (on, options) => {
       }
       if (key) await $.store.set(key, { slug, date, file, sum: sumOf(text) } satisfies Filed)
       const shown = isAbsolute ? folder : named
-      $.ui.toast(`plan saved as ${shown}/${name}${keptAs ? ` (earlier: ${keptAs})` : ''}`)
+      // The toast must fit one 120-column line with its "plan-names: " prefix, so the kept
+      // version is named by its number only; a long name gets the shortest form.
+      const saved = `plan saved as ${shown}/${name}`
+      const longer = ` (earlier kept as -r${keptAs} in .revisions)`
+      $.ui.toast(keptAs === undefined ? saved
+        : saved.length + longer.length <= TOAST_FITS ? `${saved}${longer}` : `${saved} (earlier: -r${keptAs})`)
     } catch {
       // A failure of this mod never changes the plan or the call.
     }

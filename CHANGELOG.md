@@ -2,9 +2,10 @@
 
 ## Unreleased
 
-- The toast after a revised plan is shorter, so it fits a 120-column terminal: it read
-  `...; earlier version kept as plans/.revisions/<name>-r1.md` and now reads
-  `... (earlier: .revisions/<name>-r1.md)`, the kept file's place inside the plans folder.
+- The toast after a revised plan fits a 120-column terminal, even with a long plan name.
+  It read `...; earlier version kept as plans/.revisions/<name>-r1.md`, which was cut off;
+  it now reads `... (earlier kept as -r1 in .revisions)`, or `(earlier: -r1)` when the
+  name is long. The kept file is still `plans/.revisions/<name>-r1.md`.
 
 ## 0.2.0 (2026-10-31)
 
