@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- The toast after a revised plan is shorter, so it fits a 120-column terminal: it read
+  `...; earlier version kept as plans/.revisions/<name>-r1.md` and now reads
+  `... (earlier: .revisions/<name>-r1.md)`, the kept file's place inside the plans folder.
+
 ## 0.2.0 (2026-10-31)
 
 - A revised plan no longer replaces its earlier version. When you approve the same plan

@@ -132,7 +132,7 @@ export const register: Register = (on, options) => {
       }
       if (key) await $.store.set(key, { slug, date, file, sum: sumOf(text) } satisfies Filed)
       const shown = isAbsolute ? folder : named
-      $.ui.toast(`plan saved as ${shown}/${name}${keptAs ? `; earlier version kept as ${shown}/${keptAs}` : ''}`)
+      $.ui.toast(`plan saved as ${shown}/${name}${keptAs ? ` (earlier: ${keptAs})` : ''}`)
     } catch {
       // A failure of this mod never changes the plan or the call.
     }

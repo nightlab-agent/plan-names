@@ -96,7 +96,7 @@ test('a revised plan keeps the version it replaces under .revisions/, numbered',
   expect(w.files.get(`plans/.revisions/${stem}-r2.md`)).toBe(`${PLAN}2. Add tests\n`)
   expect(w.files.get(`plans/${stem}.md`)).toContain('3. Add docs')
   expect(w.toasts[0]).toBe(`plan saved as plans/${stem}.md`)
-  expect(w.toasts[2]).toBe(`plan saved as plans/${stem}.md; earlier version kept as plans/.revisions/${stem}-r2.md`)
+  expect(w.toasts[2]).toBe(`plan saved as plans/${stem}.md (earlier: .revisions/${stem}-r2.md)`)
 })
 
 test('revision control: the same text approved again keeps no revision', async ($, on) => {

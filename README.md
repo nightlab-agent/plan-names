@@ -59,7 +59,7 @@ claude --plugin-dir plan-names
 
 Then press Shift+Tab until plan mode is on, ask for a plan, and approve it.
 A toast says where the copy went: `plan-names: plan saved as plans/2026-10-29-add-oauth-login.md`.
-After a revised plan it also names the kept version: `...; earlier version kept as plans/.revisions/2026-10-29-add-oauth-login-r1.md`.
+After a revised plan it also names the kept version: `plan saved as plans/2026-10-29-add-oauth-login.md (earlier: .revisions/2026-10-29-add-oauth-login-r1.md)`, inside the plans folder.
 
 ## How a name is made
 
