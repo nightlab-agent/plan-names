@@ -117,6 +117,7 @@ export const register: Register = (on, options) => {
           const stem = name.replace(/\.md$/, '')
           let n = 1
           while (had.includes(`${stem}-r${n}.md`.toLowerCase())) n++
+          // user file: the replaced version of the user's plan, kept beside it.
           await $.fs.write(`${kept}/${stem}-r${n}.md`, await $.fs.read(prev.file))
           keptAs = n
         } catch {
@@ -127,6 +128,7 @@ export const register: Register = (on, options) => {
 
       chosen.set(file, Infinity)
       try {
+        // user file: the user's plan under its new name.
         await $.fs.write(`${folder}/${name}`, text)
       } finally {
         chosen.set(file, ++step)
