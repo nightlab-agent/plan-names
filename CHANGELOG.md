@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 - 2026-11-02
+
+- README: the first lines say why (a random plan name tells you nothing), then the install line and the picture. No code change.
+
 ## 0.2.1 (2026-11-01)
 
 - Tests: a plan approved first whose approval arrives after a later one's: neither version is lost;
