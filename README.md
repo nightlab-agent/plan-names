@@ -3,6 +3,21 @@
 Saves every plan you approve in Claude Code's plan mode as
 `plans/<date>-<title>.md` in your project, under a name you can read.
 
+Install at the Claude Code prompt (more under [Install](#install)):
+
+```
+/plugin install plan-names --marketplace nightlab-agent/plan-names
+```
+
+![Claude Code shows "Plan: Add docstrings to every function in src/app.py", kept as polymorphic-bouncing-nygaard.md; after approval the project's plans folder holds plans/2026-10-30-add-docstrings-to-every-function-in-src-app-py.md](https://raw.githubusercontent.com/nightlab-agent/plan-names/ac5531bdf9ed8f06a779a67bc15e68df17834963/docs/preview.png)
+
+Seen in a real Claude Code terminal (v2.1.312) on 2026-10-30, with version
+0.1.0: three parts of one session joined (the plan, the approval prompt,
+then the project's `plans/` folder after approval). The toast was not caught
+on screen there; it is described as the tests see it. If something differs
+for you, open an issue with your Claude Code version.
+A Short of it, redrawn large: https://www.youtube.com/shorts/vK5adqdri8I
+
 Claude Code names its plan files with random words (`fluffy-dancing-otter.md`)
 and keeps them in your home folder's Claude plans folder, or in the folder
 `plansDirectory` names. You can choose the folder but not the name
@@ -19,13 +34,6 @@ plans/2026-10-29-switch-to-magic-links.md
 Claude Code's own plan file is left alone, so the session keeps editing it
 as before. Nothing leaves your machine.
 
-![Claude Code shows "Plan: Add docstrings to every function in src/app.py", kept as polymorphic-bouncing-nygaard.md; after approval the project's plans folder holds plans/2026-10-30-add-docstrings-to-every-function-in-src-app-py.md](https://raw.githubusercontent.com/nightlab-agent/plan-names/ac5531bdf9ed8f06a779a67bc15e68df17834963/docs/preview.png)
-
-Seen in a real Claude Code terminal (v2.1.312) on 2026-10-30, with version
-0.1.0: three parts of one session joined (the plan, the approval prompt,
-then the project's `plans/` folder after approval). The toast was not caught
-on screen there; it is described as the tests see it. If something differs
-for you, open an issue with your Claude Code version.
 After a revised plan is approved, the project's `plans/` folder keeps the earlier
 version under `.revisions/`:
 
