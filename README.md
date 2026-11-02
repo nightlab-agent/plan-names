@@ -1,6 +1,8 @@
 # plan-names
 
-Saves every plan you approve in Claude Code's plan mode as
+Claude Code keeps each plan you approve under a random name like
+`polymorphic-bouncing-nygaard.md`, so the name tells you nothing about which
+plan is inside. This plugin also saves every approved plan as
 `plans/<date>-<title>.md` in your project, under a name you can read.
 
 Install at the Claude Code prompt (more under [Install](#install)):
