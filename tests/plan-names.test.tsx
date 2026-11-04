@@ -89,7 +89,7 @@ test('the same plan approved again (same source, same title) updates its one cop
   await $.tool.call({ tool: 'ExitPlanMode' })
   const copies = [...w.files.keys()].filter(f => f.startsWith('plans/') && !f.startsWith('plans/.revisions/'))
   expect(copies).toEqual([`plans/${today()}-add-oauth-login.md`])
-  expect(w.files.get(copies[0])).toContain('2. Add tests')
+  expect(w.files.get(copies[0]!)).toContain('2. Add tests')
 })
 
 test('a revised plan keeps the version it replaces under .revisions/, numbered', async ($, on) => {
