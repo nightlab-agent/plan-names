@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3 - 2026-11-06
+
+- README: the title falls back to the first non-empty line; the test count is 42. No code change.
+
 ## 0.2.2 - 2026-11-02
 
 - README: the first lines say why (a random plan name tells you nothing), then the install line and the picture. No code change.

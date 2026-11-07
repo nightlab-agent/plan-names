@@ -75,7 +75,7 @@ After a revised plan it also says which earlier version was kept: `plan saved as
 
 - **Date:** the day you approved the plan, on your machine's clock, as
   `YYYY-MM-DD`, so a folder listing sorts by day, oldest first.
-- **Title:** the plan's first Markdown heading, else its first line. A leading
+- **Title:** the plan's first Markdown heading, else its first non-empty line. A leading
   `Plan:` or `Implementation plan:` is dropped. Accents become plain letters;
   anything other than `a-z` and `0-9` becomes a dash, so the name is safe on
   Windows, macOS and Linux. At most 60 characters, cut at a word where it can. A title with
@@ -152,7 +152,7 @@ Quit that session, then:
 sh tests/release.sh
 ```
 
-That runs `claude plugin validate .`, `claude plugin test .` (39 tests with a
+That runs `claude plugin validate .`, `claude plugin test .` (42 tests with a
 mocked disk and a mocked ExitPlanMode answer), a type check with
 `tsc --noEmit` against Claude Code's declarations, the plugin directory
 checklist (`tests/checklist.py`), and a check that the version string agrees
